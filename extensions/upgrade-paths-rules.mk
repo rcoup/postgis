@@ -4,26 +4,11 @@ TAG_UPGRADE=$(EXTENSION)--TO--ANY.sql
 
 install: install-upgrade-paths
 
-# The "next" lines are a cludge to allow upgrading between different
-# revisions of the same version
-#
-# TODO: drop the "next" lines, give users instruction to use:
-#
-#   SELECT postgis_extensions_upgrade();
-#
-# Or:
-#
-#   ALTER EXTENSION postgis UPDATE TO 'ANY';
-#   ALTER EXTENSION postgis UPDATE;
-#
 install-upgrade-paths: tag-as-any
 	tpl='$(EXTENSION)--ANY--$(EXTVERSION).sql'; \
 	$(INSTALL_DATA) sql/$${tpl} "$(EXTDIR)/$${tpl}"; \
 	$(INSTALL_DATA) "sql/$(TAG_UPGRADE)" "$(EXTDIR)/$(TAG_UPGRADE)"; \
 	ln -fs "$(TAG_UPGRADE)" $(EXTDIR)/$(EXTENSION)--$(EXTVERSION)--ANY.sql; \
-  : TODO: stop installing the "next" scripts; \
-	ln -fs "$(TAG_UPGRADE)" $(EXTDIR)/$(EXTENSION)--$(EXTVERSION)--$(EXTVERSION)next.sql; \
-	ln -fs "$(TAG_UPGRADE)" $(EXTDIR)/$(EXTENSION)--$(EXTVERSION)next--ANY.sql; \
 	for OLD_VERSION in $(UPGRADEABLE_VERSIONS); do \
     : TODO: delegate this to an admin script; \
 	  ln -fs "$(TAG_UPGRADE)" $(EXTDIR)/$(EXTENSION)--$${OLD_VERSION}--ANY.sql; \
@@ -39,7 +24,6 @@ sql/$(TAG_UPGRADE): $(MAKEFILE_LIST) | sql
 uninstall: uninstall-upgrade-paths
 
 INSTALLED_UPGRADE_SCRIPTS = \
-	$(EXTDIR)/$(EXTENSION)--$(EXTVERSION)--$(EXTVERSION)next.sql \
 	$(wildcard $(EXTDIR)/$(EXTENSION)--*--$(EXTVERSION).sql \
 	$(wildcard $(EXTDIR)/$(EXTENSION)--*--ANY.sql \
 	$(NULL)

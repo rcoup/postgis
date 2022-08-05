@@ -205,11 +205,15 @@ ALTER EXTENSION postgis_topology UPDATE TO "&last_release_version;";</programlis
     <para>
 Then everything is already up to date and you can safely ignore it. <emphasis role="bold">UNLESS</emphasis>
 you're attempting to upgrade from an development version to the next (which
-doesn't get a new version number); in that case you can append "next" to the version
-string, and next time you'll need to drop the "next" suffix again:
+doesn't get a new version number); in that case you can temporarely
+upgrade to the "ANY" virtual version and back to the current version:
     </para>
-		<programlisting>ALTER EXTENSION postgis UPDATE TO "&last_release_version;next";
-ALTER EXTENSION postgis_topology UPDATE TO "&last_release_version;next";</programlisting>
+		<programlisting>
+BEGIN;
+ALTER EXTENSION postgis UPDATE TO "ANY";
+ALTER EXTENSION postgis_topology UPDATE TO "&last_release_version;";
+COMMIT;
+        </programlisting>
 		<note><para>If you installed PostGIS originally without a version specified, you can often skip the reinstallation of postgis extension before restoring since the backup just has <code>CREATE EXTENSION postgis</code> and thus
 		picks up the newest latest version during restore.</para></note>
 
